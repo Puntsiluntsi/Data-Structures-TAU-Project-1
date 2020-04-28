@@ -4,16 +4,17 @@
  * <p>
  * An implementation of a Tree list with  key and info
  */
-public class TreeList {
-    /**
-     * public Item retrieve(int i)
-     * <p>
-     * returns the item in the ith position if it exists in the list.
-     * otherwise, returns null
-     */
-    public Item retrieve(int i) {
-        return null;  // to be replaced by student code
-    }
+ public class TreeList extends List{
+	 /**
+   * public Item retrieve(int i)
+   *
+   * returns the item in the ith position if it exists in the list.
+   * otherwise, returns null
+   */
+  public Item retrieve(int i)
+  {
+	return null;  // to be replaced by student code
+  }
 
     /**
      * public int insert(int i, int k, String s)

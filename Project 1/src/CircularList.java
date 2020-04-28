@@ -6,12 +6,13 @@
  * An implementation of a circular list with  key and info
  */
 
-public class CircularList {
+public class CircularList extends List {
 
     private int maxLen;
     private int curLen;
     private int start;
     private Item[] arr;
+
 
     public CircularList(int maxLen) {
         this.maxLen = maxLen;
@@ -90,6 +91,15 @@ public class CircularList {
         }
         curLen -= 1;   // decrease curLen by one 
         return 0;
+    }
+
+    //TODO: remove this at the end
+    int getMaxLen() {
+        return maxLen;
+    }
+
+    int size() {
+        return curLen;
     }
 
 }
