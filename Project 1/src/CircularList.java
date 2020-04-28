@@ -37,19 +37,19 @@
         }
         return arr[realPos(i)];  // return the item in i position 
     }
-    
-    private pushLeft(int start, int stop){ // pushes all items from "start" to "stop" leftwards (inclusive) (meaning each gets copied to its previous index minus one). 
-        assert (start<=stop);
-        for (int j=start; j!=(stop-1)%maxLen; j=(j-1)%maxLen){
-            arr[j-1]=arr[j];
+
+    private void shiftOnceByStep(int start, int stop, int step){
+        for (int j=start; j!=(stop+step)%maxLen; j=(j+step)%maxLen){
+            arr[j+step]=arr[j];
         }
     }
+    
+    private void pushLeft(int start, int stop){ // pushes all items from "start" to "stop" leftwards (inclusive) (meaning each gets copied to its previous index minus one).
+        shiftOnceByStep(start, stop, -1);
+    }
 
-    private pushRight(int start, int stop){ // pushs all items from "start" to "stop" rightwards (inclusive)
-        assert (start>=stop);
-        for (int j=start; j!=(stop+1)Len; j=(j+1)%maxLen){
-            arr[j+1]=arr[j];
-        }
+    private void pushRight(int start, int stop){ // pushs all items from "start" to "stop" rightwards (inclusive)
+        shiftOnceByStep(start, stop, 1);
     }
 
     /* public int insert(int i, int k, String s) 
@@ -62,15 +62,14 @@
         if (i>curLen || i<0 || curLen == maxLen){ // check if i is in the array bounds or if the array is full
             return -1;
         }
-        item = new Item(k,s);
         if (start+i<=curLen/2){ // if i is closer to the start than pushleft all the items before i
-            pushLeft(actualPos(i),start);
+            pushLeft(realPos(i),start);
             start = (start-1)%maxLen;
         } 
         else { 
-            pushRight(actualPos(i),actualPos(curLen));  // if i is closer to the end than pushleft all the items after i
+            pushRight((i),(curLen));  // if i is closer to the end than pushleft all the items after i
         }
-        arr[actualPos(i)] = item; // insert the item and increase curLen by one
+        arr[i] = new Item(k,s); // insert the item and increase curLen by one
         curLen += 1;
         return 0;
     }
@@ -87,11 +86,11 @@
             return -1;
         }
         if (start+i<=curLen/2){ // if i is closer to the start than pushRight all the items before i
-            pushRight(start,actualPos(i));
+            pushRight(start,realPos(i));
             start = (start+1)%maxLen;
         } 
         else { 
-            pushLeft(actualPos(curLen),actualPos(i));  // if i is closer to the end than pushleft all the items after i
+            pushLeft(realPos(curLen),realPos(i));  // if i is closer to the end than pushleft all the items after i
         }
         curLen -= 1;   // decrease curLen by one 
         return 0;	
