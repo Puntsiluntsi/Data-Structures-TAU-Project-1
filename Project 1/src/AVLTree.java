@@ -8,15 +8,15 @@
  */
 public class AVLTree {
 
-    private AVLNode Root = null;
-
+    private final AVLNode sentinel = new AVLNode(null,-1,0);
+    private AVLNode root = sentinel;
     /**
      * public boolean empty()
      * <p>
      * returns true if and only if the tree is empty
      */
-    public boolean empty() { // check if tree is empty <--> if Root is null
-        return Root == null;
+    public boolean empty() { // check if tree is empty <--> if root is null
+        return root == sentinel;
     }
 
     /**
@@ -27,32 +27,30 @@ public class AVLTree {
      */
     public String search(int k) { // search for the node with key = k in the tree and returns the value using nodeSearch()
         AVLNode node = nodeSearch(k);
-        if (Root == null) {
-            return null;
-
-        }
-        if (node.getKey() != k) { // check if we got the actual node or its father or null
+        if (node==sentinel || node.getKey() != k) { // if we didn't find the node
             return null;
         }
-        return node.getValue();// if the key k is in the tree we return its value
+        else{
+            return node.getValue();// if the key k is in the tree we return its value
+        }
     }
 
+    // Returns sentinel if Tree is empty, otherwise the node with key k if found, and if not found the parent of where we would insert the key k without rotations.
     private AVLNode nodeSearch(int k) { // search for the node with key = k in the tree and returns the node
-        if (Root == null) {
-            return null;
+        if (this.empty()) {
+            return sentinel;
         }
-
-        AVLNode node = Root;
+        AVLNode node = this.root;
         while (true) {
             if (node.getKey() == k) {
                 return node; // if we found the node with key = k then we return the node
             }
-            if (node.getKey() < k && node.right != null) { // if node.getKey < k we go to the right son go the node
+            if (node.getKey() < k && node.right != sentinel) { // if node.getKey < k we go to the right son go the node
                 node = node.right;
-            } else if (node.getKey() > k && node.left != null) { // if node.getKey > k we go to the left son go the node
+            } else if (node.getKey() > k && node.left != sentinel) { // if node.getKey > k we go to the left son go the node
                 node = node.left;
             } else {
-                return node; // if there isnt anywere alse to go and the key k is not in the tree we return its father
+                return node;
             }
         }
     }
@@ -67,8 +65,8 @@ public class AVLTree {
      */
     public int insert(int k, String i) {
         AVLNode newNode = new AVLNode(k, i);
-        if (Root == null) {
-            Root = newNode;
+        if (this.empty()) {
+            root = newNode;
             return 0;
         }
         AVLNode node = nodeSearch(k);
@@ -97,10 +95,10 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public String min() {// returns the value of the node with the smallst key
-        if (Root == null) {
+        if (root == null) {
             return null;
         }
-        AVLNode node = Root;
+        AVLNode node = root;
         while (node.getLeft() != null) {// we go left until there isnt any a left son the the node
             node = node.getLeft();
         }
@@ -114,10 +112,10 @@ public class AVLTree {
      * or null if the tree is empty
      */
     public String max() {
-        if (Root == null) {
+        if (root == null) {
             return null;
         }
-        AVLNode node = Root;
+        AVLNode node = root;
         while (node.getRight() != null) {// we go right until there isnt any a right son the the node
             node = node.getRight();
         }
@@ -156,7 +154,7 @@ public class AVLTree {
      * postcondition: none
      */
     public int size() {
-        return Root.getSize();
+        return root.getSize();
     }
 
     /**
@@ -168,7 +166,7 @@ public class AVLTree {
      * postcondition: none
      */
     public IAVLNode getRoot() {
-        return this.Root;
+        return this.root;
     }
 
     /**
@@ -207,35 +205,34 @@ public class AVLTree {
      * (It must implement IAVLNode)
      */
     public class AVLNode implements IAVLNode {
-        private int key;
-        private String value;
-        private AVLNode left = null;
-        private AVLNode right = null;
-        private AVLNode parent = null;
+        private Item item;
+        private AVLNode left=sentinel;
+        private AVLNode right=sentinel;
+        private AVLNode parent=sentinel;
         private int height;
         private int size;
 
-        private AVLNode(int key, String value, int height, int size) {
-            this.key = key;
-            this.value = value;
+        private AVLNode(Item item, int height, int size) {
+            this.item = item;
             this.height = height;
+            this.size = size;
+
+        }
+        private AVLNode(int key, String value, int height, int size) {
+            this(new Item(key, value), height, size);
+
         }
 
         public AVLNode(int key, String value) {
             this(key, value, 0, 1);
         }
 
-        /* TODO: add sentinel:
-         private static final AVLNode sentinel = new AVLNode(0,null,-1,0);
-        */
-
-
         public int getKey() {
-            return this.key;
+            return this.item.getKey();
         }
 
         public String getValue() {
-            return this.value;
+            return this.item.getInfo();
         }
 
         public AVLNode getLeft() {
@@ -288,4 +285,4 @@ public class AVLTree {
         }
     }
 }
-// TODO: iterator which returns path to key k.
+// TODO: iterator which returns path to key k. (can contain additional methods such as "isFound").
