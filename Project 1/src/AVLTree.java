@@ -8,7 +8,7 @@
  */
 public class AVLTree {
 
-    private final AVLNode sentinel = new AVLNode(null,-1,0);
+    private final AVLNode sentinel = new AVLNode(null,-1,0); // item=null, height=-1 and size=0.
     private AVLNode root = sentinel;
     /**
      * public boolean empty()
@@ -73,8 +73,58 @@ public class AVLTree {
         if (node.getKey() == k) {
             return -1;
         }
-        return 0; // TODO
+        newNode.setParent(node);
+        if(node.getKey() > k){
+          node.setLeft(newNode);
+        }
+        if(node.getKey() < k){
+          node.setRight(newNode);
+        }
+        AVLNode loopNode;
+        for(AVLNode loopNode = newNode; loopNode != sentinel; loopNode = loopNode.getParent){
+          loopNode.calHeight()
+        }
+        for(loopNode = newNode; loopNode != sentinel || Math.abs(loopNode.BF()) > 1 ; loopNode = loopNode.getParent){}
+        if (loopNode == sentine){
+          return 0;
+        }
+        if(loopNode.BF() == 2 && loopNode.getLeft().BF() == 1 ){
+          rotateRight(loopNode); // rotate right
+        }
+        if(loopNode.BF() == 2 && loopNode.getLeft().BF() == -1 ){
+          rotateLeftThenRight(loopNode); // rotate left then right
+        }
+        if(loopNode.BF() == -2 && loopNode.getRight().BF() == 1 ){
+          rotateLeft(loopNode); // rotate left
+        }
+        if(loopNode.BF() == -2 && loopNode.getRigth().BF() == -1 ){
+          rotateRightThenLeft(loopNode); // rotate right then left
+        }
+      
+        return 0; 
+
     }
+    ////////////////////////////////////////////////////////////////////////////////////
+    // hello idk what to do and i am bored i 
+    ////////////////////////////////////////////////////////////////////////////////////
+    public void rotateRight(AVLNode node){
+      // TODO  
+    }
+
+    public void rotateLeftThenRight(AVLNode node){
+      // TODO  
+    }
+
+    public void rotateLeft(AVLNode node){
+      // TODO  
+    }
+
+    public void rotateRightThenLeft(AVLNode node){
+      // TODO  
+    }
+
+
+
 
     /**
      * public int delete(int k)
@@ -103,6 +153,7 @@ public class AVLTree {
             node = node.getLeft();
         }
         return node.getValue();
+        
     }
 
     /**
@@ -267,6 +318,13 @@ public class AVLTree {
         public int getHeight() {
             return this.height;
         }
+        public void calHeight()
+            if(this.left.getHeight > this.right.getHeight){
+              this.height = this.left.getHeight + 1
+              }
+            else{
+              this.height = this.right.getHeight + 1
+            }
 
         public int getSize() {
             return this.size;
@@ -285,4 +343,3 @@ public class AVLTree {
         }
     }
 }
-// TODO: iterator which returns path to key k. (can contain additional methods such as "isFound").
