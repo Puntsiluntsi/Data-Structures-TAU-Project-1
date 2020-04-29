@@ -1,4 +1,4 @@
-
+import java.util.Iterator;
 
 /**
  * AVLTree
@@ -8,8 +8,9 @@
  */
 public class AVLTree {
 
-    private final AVLNode sentinel = new AVLNode(null,-1,0);
+    private final AVLNode sentinel = new AVLNode(null, -1, 0);
     private AVLNode root = sentinel;
+
     /**
      * public boolean empty()
      * <p>
@@ -27,13 +28,61 @@ public class AVLTree {
      */
     public String search(int k) { // search for the node with key = k in the tree and returns the value using nodeSearch()
         AVLNode node = nodeSearch(k);
-        if (node==sentinel || node.getKey() != k) { // if we didn't find the node
+        if (node == sentinel || node.getKey() != k) { // if we didn't find the node
             return null;
-        }
-        else{
+        } else {
             return node.getValue();// if the key k is in the tree we return its value
         }
     }
+
+    private static abstract class TreePathIterator implements Iterator<AVLNode> {
+        protected AVLNode curr;
+
+        public TreePathIterator(AVLNode start) {
+            this.curr = start;
+        }
+
+        abstract void advance();
+
+        @Override
+        // @pre: hasNext()
+        public AVLNode next() {
+            assert hasNext();
+
+            AVLNode ret = curr;
+            advance();
+            return ret;
+        }
+    }
+
+    private class SearchPath extends TreePathIterator {
+
+        private int key;
+
+        public SearchPath(AVLNode start, int key) {
+            super(start);
+            this.key = key;
+
+        }
+
+        @Override
+        public boolean hasNext() {
+            return (curr != sentinel && curr.getKey() != key);
+        }
+
+        @Override
+        public void advance() {
+            if (curr.getKey() < key) {
+                curr = curr.right;
+            } else {
+                curr = curr.left;
+            }
+        }
+
+/*        public boolean found(){
+    }*/
+    }
+
 
     // Returns sentinel if Tree is empty, otherwise the node with key k if found, and if not found the parent of where we would insert the key k without rotations.
     private AVLNode nodeSearch(int k) { // search for the node with key = k in the tree and returns the node
@@ -206,19 +255,20 @@ public class AVLTree {
      */
     public class AVLNode implements IAVLNode {
         private Item item;
-        private AVLNode left=sentinel;
-        private AVLNode right=sentinel;
-        private AVLNode parent=sentinel;
+        private AVLNode left = sentinel;
+        private AVLNode right = sentinel;
+        private AVLNode parent = sentinel;
         private int height;
         private int size;
 
-        private AVLNode(Item item, int height, int size) {
+        public AVLNode(Item item, int height, int size) {
             this.item = item;
             this.height = height;
             this.size = size;
 
         }
-        private AVLNode(int key, String value, int height, int size) {
+
+        public AVLNode(int key, String value, int height, int size) {
             this(new Item(key, value), height, size);
 
         }
