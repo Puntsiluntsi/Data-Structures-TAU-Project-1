@@ -5,6 +5,8 @@
  * An implementation of a Tree list with  key and info
  */
  public class TreeList extends List{
+
+   
 	 /**
    * public Item retrieve(int i)
    *
@@ -13,7 +15,7 @@
    */
   public Item retrieve(int i)
   {
-	return null;  // to be replaced by student code
+	return ;  // to be replaced by student code
   }
 
     /**
@@ -23,7 +25,7 @@
      * returns -1 if i<0 or i>n otherwise return 0.
      */
     public int insert(int i, int k, String s) {
-        return 42;    // to be replaced by student code
+        return AVLTree.treeInsert(i, k, s );  
     }
 
     /**

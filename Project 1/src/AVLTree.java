@@ -10,6 +10,10 @@ public class AVLTree {
 
     private final AVLNode sentinel = new AVLNode(null, -1, 0); // item=null, height=-1 and size=0.
     private AVLNode root = sentinel;
+    private AVLNode min = sentinel;
+    private AVLNode max = sentinel;
+    
+
 
     /**
      * public boolean empty()
@@ -20,6 +24,21 @@ public class AVLTree {
         return root == sentinel;
     }
 
+    public void updateRoot(){
+        for(node = root; node != sentinel ;node = node.getParent()){
+          root = node;
+        }
+
+    }
+
+    public item treeRetrieve(int i){
+        AVLNode node = rankSearch(i+1);
+        if (node ==sentinel ){
+          return null
+        }
+        Item item = new Item(node.getKey(), node.getInfo());
+        retrun item;
+    }
     /**
      * public String search(int k)
      * <p>
@@ -55,6 +74,12 @@ public class AVLTree {
                 return node; // we either found the node, or we're returning the parent of where we would insert it (before rotations).
             }
         }
+    }
+
+
+
+    private AVLNode rankSearch(int i){
+// TODO return sentinel if not found, otherwise retruns the AVLNode with the ith rank
     }
 
     /**
@@ -95,7 +120,83 @@ public class AVLTree {
         for (ancestor = parent; ancestor != sentinel; ancestor = ancestor.getParent()) {
             ancestor.updateHeight();
 
-            assert (2 <= ancestor.BF()) && (ancestor.BF() <= 2); // should always be true in an AVL tree.
+            assert (-2 <= ancestor.BF()) && (ancestor.BF() <= 2); // should always be true in an AVL tree.
+
+            if (ancestor.BF() == 2 && ancestor.getLeft().BF() == 1) {
+                rotateRight(ancestor); // rotate right
+                return 1;
+            } else if (ancestor.BF() == 2 && ancestor.getLeft().BF() == -1) {
+                rotateLeftThenRight(ancestor); // rotate left then right
+                return 2;
+            } else if (ancestor.BF() == -2 && ancestor.getRight().BF() == 1) {
+                rotateLeft(ancestor); // rotate left
+                return 1;
+            } else if (ancestor.BF() == -2 && ancestor.getRight().BF() == -1) {
+                rotateRightThenLeft(ancestor); // rotate right then left
+                return 2;
+            }
+
+        }
+        if(this.min == sentinel ||newNode.getKey() < this.min.getKey()){
+            this.min = newNode;
+        }
+        if(this.max == sentinel ||newNode.getKey() > this.max.getKey()){
+            this.max = newNode;
+        }
+
+        return 0;
+    }
+
+
+    public void rotateRight(AVLNode node) {
+        // TODO
+    }
+
+    public void rotateLeftThenRight(AVLNode node) {
+        // TODO
+    }
+
+    public void rotateLeft(AVLNode node) {
+        // TODO
+    }
+
+    public void rotateRightThenLeft(AVLNode node) {
+        // TODO
+    }
+
+
+
+    public int treeInsert(int rank , int k , String s){
+        AVLNode newNode = new AVLNode(k, i);
+        if (this.empty()) {
+            root = newNode;
+            return 0;
+        if(i < 0 || i > this.size()){
+          return -1;
+        }
+        if(i == this.size()){
+          this.max.setRight(newNode);
+          newNode.setParent(this.max);
+        }
+        else{
+          AVLNode node = rankSearch(i+1);
+          if (node.getLeft == sentinel){
+            node.setLeft(newNode);
+            newNode.setParent(node);
+          }
+          else{
+            AVLNode node = rankSearch(i);
+            if (node.getRight == sentinel){
+            node.setRight(newNode);
+            newNode.setParent(node);
+            }
+            }
+        }
+        AVLNode ancestor;  // SAME AS REGULAR INSERT
+        for (ancestor = parent; ancestor != sentinel; ancestor = ancestor.getParent()) {
+            ancestor.updateHeight();
+
+            assert (-2 <= ancestor.BF()) && (ancestor.BF() <= 2); // should always be true in an AVL tree.
 
             if (ancestor.BF() == 2 && ancestor.getLeft().BF() == 1) {
                 rotateRight(ancestor); // rotate right
@@ -114,27 +215,6 @@ public class AVLTree {
         }
         return 0;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // hello idk what to do and i am bored i
-    ////////////////////////////////////////////////////////////////////////////////////
-    public void rotateRight(AVLNode node) {
-        // TODO
-    }
-
-    public void rotateLeftThenRight(AVLNode node) {
-        // TODO
-    }
-
-    public void rotateLeft(AVLNode node) {
-        // TODO
-    }
-
-    public void rotateRightThenLeft(AVLNode node) {
-        // TODO
-    }
-
-
     /**
      * public int delete(int k)
      * <p>
@@ -157,11 +237,7 @@ public class AVLTree {
         if (root == null) {
             return null;
         }
-        AVLNode node = root;
-        while (node.getLeft() != null) {// we go left until there isnt any a left son the the node
-            node = node.getLeft();
-        }
-        return node.getValue();
+        return node.min;
 
     }
 
@@ -175,12 +251,7 @@ public class AVLTree {
         if (root == null) {
             return null;
         }
-        AVLNode node = root;
-        while (node.getRight() != null) {// we go right until there isnt any a right son the the node
-            node = node.getRight();
-        }
-        return node.getValue();
-    }
+        return this.max;
 
     /**
      * public int[] keysToArray()
