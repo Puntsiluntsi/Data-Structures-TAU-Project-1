@@ -227,8 +227,8 @@ public class AVLTree {
     }
 
 
-    public int treeInsert(int rank , int k , String s){
-        AVLNode newNode = new AVLNode(k, i);
+    public int treeInsert(int i , int k , String s){
+        AVLNode newNode = new AVLNode(k, s);
         if (this.empty()) {
             root = newNode;
             return 0;
@@ -242,20 +242,20 @@ public class AVLTree {
         }
         else{
           AVLNode node = rankSearch(i+1);
-          if (node.getLeft == sentinel){
+          if (node.getLeft() == sentinel){
             node.setLeft(newNode);
             newNode.setParent(node);
           }
           else{
             AVLNode node = rankSearch(i);
-            if (node.getRight == sentinel){
+            if (node.getRight() == sentinel){
             node.setRight(newNode);
             newNode.setParent(node);
             }
             }
         }
         AVLNode ancestor;  // SAME AS REGULAR INSERT
-        for (ancestor = parent; ancestor != sentinel; ancestor = ancestor.getParent()) {
+        for (ancestor = newNode; ancestor != sentinel; ancestor = ancestor.getParent()) {
             ancestor.updateHeight();
 
             assert (-2 <= ancestor.BF()) && (ancestor.BF() <= 2); // should always be true in an AVL tree.
@@ -299,7 +299,7 @@ public class AVLTree {
         if (empty()) {
             return null;
         }
-        return this.min;
+        return this.min.getInfo();
     }
 
     /**
@@ -312,7 +312,7 @@ public class AVLTree {
             if (empty()) {
                 return null;
             }
-            return this.max;
+            return this.max.getInfo();
         }
 
     /**

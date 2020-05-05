@@ -15,7 +15,7 @@
    */
   public Item retrieve(int i)
   {
-	return ;  // to be replaced by student code
+	return AVLTree.treeRetrieve(i);  
   }
 
     /**
