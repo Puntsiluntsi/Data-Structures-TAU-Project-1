@@ -186,8 +186,8 @@ public class AVLTree {
     // POST: old is detached (old isn't actually a child of old.parent)
     private void replace(AVLNode oldNode, AVLNode newNode) {
         if (oldNode == root) {
+            newNode.setParent(sentinel);
             root = newNode;
-            root.setParent(sentinel);
         } else {
             connect(oldNode.getParent(), newNode, oldNode.getDir());
         }
@@ -199,6 +199,7 @@ public class AVLTree {
         assert oldBase != sentinel && newBase != sentinel;
         oldBase.setChild(opposite, newBase.getChild(dir));
         newBase.setChild(dir, oldBase);
+        replace(oldBase, newBase);
         connect(newBase, oldBase, dir);
         oldBase.updateAll();
         newBase.updateAll();
