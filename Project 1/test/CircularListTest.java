@@ -30,11 +30,11 @@ class CircularListTest {
 					count++;
 					System.out.println();
 				}
-				if(x.curLen !=compare.size()) {
+				if(x.size() !=compare.size()) {
 					System.out.println("Error!!! insert, not same size");
 					check=false;
 				}
-				for (int i = 0; i<x.curLen; i++) {
+				for (int i = 0; i<x.size(); i++) {
 					if (x.retrieve(i).getKey()!=compare.get(i)) {
 						System.out.println("Error!!! insert, put breakpoint here");
 						check=false;
@@ -45,18 +45,18 @@ class CircularListTest {
 					}
 		        // printing each array element
 		      }
-				for (int i = 0; i<(x.curLen /2); i++)
+				for (int i = 0; i<(x.size() /2); i++)
 				{
-					delIndex=rd.nextInt(x.curLen);
+					delIndex=rd.nextInt(x.size());
 					compare.remove(delIndex);
 					x.delete(delIndex);
 				}
-				if(x.curLen !=compare.size())
+				if(x.size() !=compare.size())
 					{
 						System.out.println("Error!!! delete, not same size");
 						check=false;
 					}
-				for (int i = 0; i<x.curLen; i++) {
+				for (int i = 0; i<x.size(); i++) {
 					if (x.retrieve(i).getKey()!=compare.get(i)) {
 						System.out.println("Error!!! delete, put breakpoint here");
 						check=false;
@@ -83,7 +83,7 @@ class CircularListTest {
 //    }
 //
 //    @Test
-//    void getcurLen() {
+//    void getsize()() {
 //    }
 //
 //    @Test

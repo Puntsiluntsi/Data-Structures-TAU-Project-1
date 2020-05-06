@@ -9,7 +9,7 @@ import java.util.Arrays;
 public class CircularList extends MyList {
 
     private int maxLen;
-    public int curLen;
+    private int curLen;
     private int start;
     private Item[] arr;
 
