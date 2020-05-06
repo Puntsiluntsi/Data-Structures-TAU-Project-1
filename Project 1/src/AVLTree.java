@@ -81,7 +81,19 @@ public class AVLTree {
         // TODO return sentinel if not found, otherwise retruns the AVLNode with the ith rank
         assert rank <= size();
         assert 1<=rank;
-        return null;
+        AVLNode currRoot = root();
+        int currRankInSubTree = currRoot.left.getSize()+1;
+        int targetRankInSubTree = rank;
+        while (true) {
+            if (currRankInSubTree == targetRankInSubTree) {
+                return currRoot;
+            } else if (targetRankInSubTree < currRankInSubTree) {
+                currRoot = currRoot.getLeft();
+            } else {
+                currRoot = currRoot.getRight();
+                targetRankInSubTree -= currRankInSubTree;
+            }
+        }
     }
 
     /**
