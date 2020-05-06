@@ -27,13 +27,12 @@ public class AVLTree {
         return root() == sentinel;
     }
 
-    public Item treeRetrieve(int i) {
-        AVLNode node = select(i + 1);
+    Item selectItem(int rank) {
+        AVLNode node = select(rank);
         if (node == sentinel) {
-            return null
+            return null;
         }
-        Item item = new Item(node.getKey(), node.getValue());
-        return item;
+        return new Item(node.getKey(), node.getValue());
     }
 
     /**
@@ -82,7 +81,7 @@ public class AVLTree {
         // TODO return sentinel if not found, otherwise retruns the AVLNode with the ith rank
         assert rank <= size();
         assert 1<=rank;
-
+        return null;
     }
 
     /**
@@ -130,7 +129,7 @@ public class AVLTree {
     private int updateAncestorsAfterInsert(AVLNode parent) {
         int balanceOps = 0;
         AVLNode ancestor;
-        for (ancestor = parent; balanceOps>0 ; ancestor = ancestor.getParent()) {
+        for (ancestor = parent; balanceOps==0; ancestor = ancestor.getParent()) {
             assert (2 <= ancestor.BF()) && (ancestor.BF() <= 2);
             // should always be true in an AVL tree.
 
@@ -144,10 +143,13 @@ public class AVLTree {
 
             balanceOps = rotateIfUnbalanced(ancestor);
         }
-        assert (ancestor.hasUpdatedHeight());
+
+        // if we reached this part, we've just preformed a rotation on ancestor.
+        ancestor = ancestor.getParent().getParent();
+        // we go up to the node above the rotation.
+        // (to avoid increasing the size of nodes involved in the rotation again later)
 
         // second loop for updating remaining sizes after rotation:
-        ancestor = ancestor.getParent();
         for (; ancestor != sentinel; ancestor = ancestor.getParent()) {
             assert ancestor.hasUpdatedHeight();
             ancestor.incSize();
@@ -159,22 +161,24 @@ public class AVLTree {
 
     
     private int updateAncestorsAfterDelete(AVLNode parent) {
-        int balanceOps = 0;
+        int totalBalanceOps = 0;
         AVLNode ancestor;
         for (ancestor = parent; ancestor!=sentinel ; ancestor = ancestor.getParent()) {
             assert (2 <= ancestor.BF()) && (ancestor.BF() <= 2);
             // should always be true in an AVL tree.
 
-            if (ancestor == sentinel) {
-                return 0;
-            }
-
             ancestor.decSize();
             assert ancestor.hasUpdatedSize();
             ancestor.updateHeight();
 
-            balanceOps += rotateIfUnbalanced(ancestor);
+            int balanceOps = rotateIfUnbalanced(ancestor);
+            if (balanceOps > 0) {
+                totalBalanceOps += balanceOps;
+                ancestor=ancestor.getParent();
+                // go to the top node in the rotation.
+            }
         }
+        return totalBalanceOps;
     }
 
     // POST: parent.getChild(dir)==child && child.getParent()==parent.
@@ -251,20 +255,20 @@ public class AVLTree {
         return 0;
     }
 
-    public int insertAtRank(int i, int k, String s) {
-        assert 1<=i;
-        assert i<=size();
+    int insertAtRank(int rank, int k, String s) {
+        assert 1<=rank;
+        assert rank<=size();
         AVLNode newNode = new AVLNode(k, s);
         if (this.empty()) {
             root = newNode;
             return 0;
         }
-        AVLNode node = select(i + 1);
+        AVLNode node = select(rank);
         if (node.getLeft() == sentinel) {
-            connect(node,newNode, Dir.LEFT)
+            connect(node, newNode, Dir.LEFT);
         } else {
-            node = select(i);
-            connect(node,newNode, Dir.RIGHT)
+            node = select(rank);
+            connect(node, newNode, Dir.RIGHT);
         }
         
         return updateAncestorsAfterInsert(node);
@@ -279,7 +283,7 @@ public class AVLTree {
      * returns -1 if an item with key k was not found in the tree.
      */
     public int delete(int k) {
-        ;   
+        return 0;
     }
 
     /**
@@ -533,7 +537,7 @@ public class AVLTree {
 
         private Dir dirTo(int key) {
             assert (this.getKey() != key);
-            return this.getKey();
+            return Dir.rightIff(this.getKey() < key);
         }
 
         private AVLNode nextInSearch(int key) {
