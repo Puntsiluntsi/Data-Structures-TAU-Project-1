@@ -28,12 +28,11 @@ public class AVLTree {
     }
 
     public Item treeRetrieve(int i) {
-        assert i<
         AVLNode node = select(i + 1);
         if (node == sentinel) {
             return null
         }
-        Item item = new Item(node.getKey(), node.getInfo());
+        Item item = new Item(node.getKey(), node.getValue());
         return item;
     }
 
@@ -258,7 +257,7 @@ public class AVLTree {
                 node.setLeft(newNode);
                 newNode.setParent(node);
             } else {
-                AVLNode node = select(i);
+                node = select(i);
                 if (node.getRight() == sentinel) {
                     node.setRight(newNode);
                     newNode.setParent(node);
@@ -552,7 +551,7 @@ public class AVLTree {
 
         private Dir dirTo(int key) {
             assert (this.getKey() != key);
-            return this.getKey()
+            return this.getKey();
         }
 
         private AVLNode nextInSearch(int key) {
