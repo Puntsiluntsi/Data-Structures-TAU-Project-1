@@ -25,7 +25,7 @@
      * returns -1 if i<0 or i>n otherwise return 0.
      */
     public int insert(int i, int k, String s) {
-        return AVLTree.treeInsert(i, k, s );  
+        return AVLTree.insertAtRank(i, k, s );  
     }
 
     /**

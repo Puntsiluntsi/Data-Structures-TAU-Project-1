@@ -81,6 +81,7 @@ public class AVLTree {
     private AVLNode select(int rank) {
         // TODO return sentinel if not found, otherwise retruns the AVLNode with the ith rank
         assert rank <= size();
+        assert 1<=rank;
 
     }
 
@@ -126,15 +127,6 @@ public class AVLTree {
 
     }
 
-    // Does not maintain BST properties.
-    int insertAtRank(int rank, int k, String i) {
-        connect(parent, new AVLNode(k, i), dir);
-    }
-
-    private int insertAt(AVLNode parent, Dir dir, int k, String s) {
-        r
-    }
-
     private int updateAncestorsAfterInsert(AVLNode parent) {
         int balanceOps = 0;
         AVLNode ancestor;
@@ -163,6 +155,26 @@ public class AVLTree {
         }
 
         return balanceOps;
+    }
+
+    
+    private int updateAncestorsAfterDelete(AVLNode parent) {
+        int balanceOps = 0;
+        AVLNode ancestor;
+        for (ancestor = parent; ancestor!=sentinel ; ancestor = ancestor.getParent()) {
+            assert (2 <= ancestor.BF()) && (ancestor.BF() <= 2);
+            // should always be true in an AVL tree.
+
+            if (ancestor == sentinel) {
+                return 0;
+            }
+
+            ancestor.decSize();
+            assert ancestor.hasUpdatedSize();
+            ancestor.updateHeight();
+
+            balanceOps += rotateIfUnbalanced(ancestor);
+        }
     }
 
     // POST: parent.getChild(dir)==child && child.getParent()==parent.
@@ -239,53 +251,23 @@ public class AVLTree {
         return 0;
     }
 
-    public int treeInsert(int i, int k, String s) {
+    public int insertAtRank(int i, int k, String s) {
+        assert 1<=i;
+        assert i<=size();
         AVLNode newNode = new AVLNode(k, s);
         if (this.empty()) {
             root = newNode;
             return 0;
         }
-        if (i < 0 || i > this.size()) {
-            return -1;
-        }
-        if (i == this.size()) {
-            this.max.setRight(newNode);
-            newNode.setParent(this.max);
+        AVLNode node = select(i + 1);
+        if (node.getLeft() == sentinel) {
+            connect(node,newNode, Dir.LEFT)
         } else {
-            AVLNode node = select(i + 1);
-            if (node.getLeft() == sentinel) {
-                node.setLeft(newNode);
-                newNode.setParent(node);
-            } else {
-                node = select(i);
-                if (node.getRight() == sentinel) {
-                    node.setRight(newNode);
-                    newNode.setParent(node);
-                }
-            }
+            node = select(i);
+            connect(node,newNode, Dir.RIGHT)
         }
-        AVLNode ancestor;  // SAME AS REGULAR INSERT
-        for (ancestor = newNode; ancestor != sentinel; ancestor = ancestor.getParent()) {
-            ancestor.updateHeight();
-
-            assert (-2 <= ancestor.BF()) && (ancestor.BF() <= 2); // should always be true in an AVL tree.
-
-            if (ancestor.BF() == 2 && ancestor.getLeft().BF() == 1) {
-                rotateRight(ancestor); // rotate right
-                return 1;
-            } else if (ancestor.BF() == 2 && ancestor.getLeft().BF() == -1) {
-                rotateLeftThenRight(ancestor); // rotate left then right
-                return 2;
-            } else if (ancestor.BF() == -2 && ancestor.getRight().BF() == 1) {
-                rotateLeft(ancestor); // rotate left
-                return 1;
-            } else if (ancestor.BF() == -2 && ancestor.getRight().BF() == -1) {
-                rotateRightThenLeft(ancestor); // rotate right then left
-                return 2;
-            }
-
-        }
-        return 0;
+        
+        return updateAncestorsAfterInsert(node);
     }
 
     /**
@@ -297,7 +279,7 @@ public class AVLTree {
      * returns -1 if an item with key k was not found in the tree.
      */
     public int delete(int k) {
-        return 42;    // to be replaced by student code
+        ;   
     }
 
     /**
@@ -396,7 +378,7 @@ public class AVLTree {
             }
         }
 
-        static Dir rightIff(boolean cond) {
+        private static Dir rightIff(boolean cond) {
             if (cond) {
                 return RIGHT;
             } else {
