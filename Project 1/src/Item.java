@@ -17,4 +17,8 @@ public class Item {
     public String getInfo() {
         return info;
     }
+
+    public String toString() {
+        return info;
+    }
 }
