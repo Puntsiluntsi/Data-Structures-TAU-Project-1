@@ -1,5 +1,5 @@
 //TODO: remove this class when finishing.
-public abstract class List {
+public abstract class MyList {
     abstract public Item retrieve(int i);
 
     abstract public int insert(int i, int k, String s);
@@ -8,5 +8,5 @@ public abstract class List {
 
     //abstract int size();
 
-    Item[] keyArray()
+//    Item[] keyArray()
 }

@@ -4,9 +4,8 @@
  * <p>
  * An implementation of a Tree list with  key and info
  */
- public class TreeList extends List{
-
-   
+ public class TreeList extends MyList {
+    private AVLTree tree = new AVLTree();
 	 /**
    * public Item retrieve(int i)
    *
@@ -15,7 +14,7 @@
    */
   public Item retrieve(int i)
   {
-	return AVLTree.treeRetrieve(i);  
+	return tree.treeRetrieve(i);
   }
 
     /**
@@ -25,13 +24,13 @@
      * returns -1 if i<0 or i>n otherwise return 0.
      */
     public int insert(int i, int k, String s) {
-        return AVLTree.insertAtRank(i, k, s );  
+        return tree.insertAtRank(i, k, s );
     }
 
     /**
      * public int delete(int i)
      * <p>
-     * deletes an item in the ith posittion from the list.
+     * deletes an item in the ith position from the list.
      * returns -1 if i<0 or i>n-1 otherwise returns 0.
      */
     public int delete(int i) {
