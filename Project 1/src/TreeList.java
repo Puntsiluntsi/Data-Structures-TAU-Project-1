@@ -14,7 +14,7 @@
    */
   public Item retrieve(int i)
   {
-	return tree.selectItem(i+1);
+	return tree.getItemAtRank(i+1);
   }
 
     /**
@@ -24,7 +24,12 @@
      * returns -1 if i<0 or i>n otherwise return 0.
      */
     public int insert(int i, int k, String s) {
-        return tree.insertAtRank(i+1, k, s );
+        int ret = tree.insertAtRank(i + 1, k, s);
+        if (ret >= 0) {
+            return 0;
+        } else {
+            return -1;
+        }
     }
 
     /**
@@ -34,7 +39,7 @@
      * returns -1 if i<0 or i>n-1 otherwise returns 0.
      */
     public int delete(int i) {
-        return 42;    // to be replaced by student code
+        return tree.deleteAtRank(i+1);    // to be replaced by student code
     }
 
 }

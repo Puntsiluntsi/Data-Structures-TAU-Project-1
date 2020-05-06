@@ -5,10 +5,6 @@
  * distinct integer keys and info
  */
 
-//TODO:
-//    maintain size field
-//    utilize nextInSearch method in searchNode and similar.
-
 public class AVLTree {
 
     private final AVLNode sentinel = new AVLNode(
@@ -27,7 +23,7 @@ public class AVLTree {
         return root() == sentinel;
     }
 
-    Item selectItem(int rank) {
+    Item getItemAtRank(int rank) {
         AVLNode node = select(rank);
         if (node == sentinel) {
             return null;
@@ -63,7 +59,7 @@ public class AVLTree {
             return sentinel;
         }
         AVLNode next;
-        for (AVLNode node = this.root(); ; node = next) {
+        for (AVLNode node = root(); ; node = next) {
             if (node.getKey() == k) {
                 // if we found the node with key = k then we return the node.
                 return node;
@@ -77,12 +73,13 @@ public class AVLTree {
     }
 
 
+    // does not utilize this.max,this.min since they might not be maintained in TreeList usage.
+    // @pre 1<=rank<=size()
     private AVLNode select(int rank) {
-        // TODO return sentinel if not found, otherwise retruns the AVLNode with the ith rank
         assert rank <= size();
-        assert 1<=rank;
+        assert 1 <= rank;
         AVLNode currRoot = root();
-        int currRankInSubTree = currRoot.left.getSize()+1;
+        int currRankInSubTree = currRoot.left.getSize() + 1;
         int targetRankInSubTree = rank;
         while (true) {
             if (currRankInSubTree == targetRankInSubTree) {
@@ -141,7 +138,7 @@ public class AVLTree {
     private int updateAncestorsAfterInsert(AVLNode parent) {
         int balanceOps = 0;
         AVLNode ancestor;
-        for (ancestor = parent; balanceOps==0; ancestor = ancestor.getParent()) {
+        for (ancestor = parent; balanceOps == 0; ancestor = ancestor.getParent()) {
             assert (2 <= ancestor.BF()) && (ancestor.BF() <= 2);
             // should always be true in an AVL tree.
 
@@ -171,11 +168,11 @@ public class AVLTree {
         return balanceOps;
     }
 
-    
+
     private int updateAncestorsAfterDelete(AVLNode parent) {
         int totalBalanceOps = 0;
         AVLNode ancestor;
-        for (ancestor = parent; ancestor!=sentinel ; ancestor = ancestor.getParent()) {
+        for (ancestor = parent; ancestor != sentinel; ancestor = ancestor.getParent()) {
             assert (2 <= ancestor.BF()) && (ancestor.BF() <= 2);
             // should always be true in an AVL tree.
 
@@ -186,7 +183,7 @@ public class AVLTree {
             int balanceOps = rotateIfUnbalanced(ancestor);
             if (balanceOps > 0) {
                 totalBalanceOps += balanceOps;
-                ancestor=ancestor.getParent();
+                ancestor = ancestor.getParent();
                 // go to the top node in the rotation.
             }
         }
@@ -201,15 +198,22 @@ public class AVLTree {
 
 
     // new is placed instead of old as old.parent's child.
-    // POST: old is detached (old isn't actually a child of old.parent)
-    private void replace(AVLNode oldNode, AVLNode newNode) {
+    // POST: old is detached from its parent (old isn't actually a child of old.parent)
+    private void connectParentWithReplacement(AVLNode oldNode, AVLNode replacement) {
         if (oldNode == root) {
-            newNode.setParent(sentinel);
-            root = newNode;
+            replacement.setParent(sentinel);
+            root = replacement;
         } else {
-            connect(oldNode.getParent(), newNode, oldNode.getDir());
+            connect(oldNode.getParent(), replacement, oldNode.getDir());
         }
     }
+
+    private void replace(AVLNode oldNode, AVLNode replacement) {
+        connectParentWithReplacement(oldNode, replacement);
+        connect(replacement, oldNode.getRight(), Dir.RIGHT);
+        connect(replacement, oldNode.getLeft(), Dir.LEFT);
+    }
+
 
     private void rotate(AVLNode oldBase, Dir dir) {
         Dir opposite = dir.opposite();
@@ -217,7 +221,7 @@ public class AVLTree {
         assert oldBase != sentinel && newBase != sentinel;
         oldBase.setChild(opposite, newBase.getChild(dir));
         newBase.setChild(dir, oldBase);
-        replace(oldBase, newBase);
+        connectParentWithReplacement(oldBase, newBase);
         connect(newBase, oldBase, dir);
         oldBase.updateAll();
         newBase.updateAll();
@@ -248,43 +252,49 @@ public class AVLTree {
 
     private int rotateIfUnbalanced(AVLNode node) {
         if (node.BF() == 2) {
-            if (node.getLeft().BF() == 1) {
-                rotateRight(node);
-                return 1;
-            } else {
+            if (node.getLeft().BF() == -1) {
                 rotateLeftThenRight(node);
                 return 2;
+            } else {
+                rotateRight(node);
+                return 1;
             }
         } else if (node.BF() == -2) {
-            if (node.getRight().BF() == -1) {
-                rotateLeft(node);
-                return 1;
-            } else {
+            if (node.getRight().BF() == 1) {
                 rotateRightThenLeft(node);
                 return 2;
+            } else {
+                rotateLeft(node);
+                return 1;
             }
         }
         return 0;
     }
 
     int insertAtRank(int rank, int k, String s) {
-        assert 1<=rank;
-        assert rank<=size();
+        assert 1 <= rank;
+        assert rank <= size()+1;
         AVLNode newNode = new AVLNode(k, s);
         if (this.empty()) {
             root = newNode;
             return 0;
         }
-        AVLNode node = select(rank);
+        AVLNode node;
+        if (rank == size() + 1) {
+            node = select(size());
+            connect(node, newNode, Dir.RIGHT);
+        }
+        node = select(rank);
         if (node.getLeft() == sentinel) {
             connect(node, newNode, Dir.LEFT);
         } else {
-            node = select(rank);
+            node = node.predecessor();
             connect(node, newNode, Dir.RIGHT);
         }
-        
+
         return updateAncestorsAfterInsert(node);
     }
+
 
     /**
      * public int delete(int k)
@@ -295,7 +305,55 @@ public class AVLTree {
      * returns -1 if an item with key k was not found in the tree.
      */
     public int delete(int k) {
-        return 0;
+        if (k == max.getKey()) {
+            this.max = this.max.getParent();
+            return delete(max);
+        } else if (k == min.getKey()) {
+            this.min = this.min.getParent();
+            return delete(min);
+        }
+
+        AVLNode searchRes = nodeSearch(k);
+        if (searchRes.getKey() == k) {
+            return delete(searchRes);
+        } else {
+            return -1;
+        }
+    }
+
+    // does not update max,min if given. if they are given, this.min/this.max won't point to a node that exists in
+    // the tree anymore.
+    private int delete(AVLNode node) {
+        AVLNode parentOfRemoved;
+        if (node.getLeft() != sentinel && node.getRight() != sentinel) {
+            AVLNode successor = node.successor();
+            parentOfRemoved = successor.getParent();
+            removeNodeWithOnlyDirChild(successor, Dir.LEFT);
+            replace(node, successor);
+        } else {
+            parentOfRemoved = node.getParent();
+            if (node.getLeft() == sentinel) {
+                removeNodeWithOnlyDirChild(node, Dir.RIGHT);
+            } else {
+                removeNodeWithOnlyDirChild(node, Dir.LEFT);
+            }
+        }
+        return updateAncestorsAfterDelete(parentOfRemoved);
+    }
+
+    // does not maintain this.max, this.min correctly, only for use in TreeList.
+    int deleteAtRank(int rank) {
+        return delete(select(rank));
+    }
+
+    // @pre: node.getChild(dir.opposite())==sentinel - meaning the node doesn't have a child in the direction
+    // opposite to the one given. the method DOES accept a leaf.
+    // @post: node is completely detached (is not a child or parent of any node).
+    // does not preform rotations.
+    private void removeNodeWithOnlyDirChild(AVLNode node, Dir dir) {
+        assert node.getChild(dir.opposite()) == sentinel;
+        AVLNode parent = node.getParent();
+        connectParentWithReplacement(node, node.getChild(dir));
     }
 
     /**
@@ -605,6 +663,33 @@ public class AVLTree {
 
         private boolean isAVLBalanced() {
             return Math.abs(BF()) <= 1;
+        }
+
+
+        private AVLNode nextInDir(Dir dir) {
+            Dir opposite = dir.opposite();
+            if (this.getChild(dir) != sentinel) {
+                for (AVLNode node = this.getChild(dir); ; node = node.getChild(opposite)) {
+                    if (node.getChild(opposite) == sentinel) {
+                        return node;
+                    }
+                }
+            } else {
+                for (AVLNode node = this.getParent(); node != root(); node = node.getParent()) {
+                    if (node.getDir() != dir) {
+                        return node.getParent();
+                    }
+                }
+            }
+            return sentinel;
+        }
+
+        private AVLNode predecessor() {
+            return nextInDir(Dir.LEFT);
+        }
+
+        private AVLNode successor() {
+            return nextInDir(Dir.RIGHT);
         }
 
     }
